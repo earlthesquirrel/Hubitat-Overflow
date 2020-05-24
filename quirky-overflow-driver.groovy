@@ -3,8 +3,8 @@ Quirky Moisture Sensor
 Based off of https://community.smartthings.com/t/quirky-overflow/18359/35
 */
 metadata {
-	definition (name: "Quirky Moisture Sensor",namespace: "tierneykev", author: "Kevin Tierney") {
-		capability "Configuration" // https://docs.hubitat.com/index.php?title=Driver_Capability_List#Configuration
+  definition (name: "Quirky Moisture Sensor",namespace: "tierneykev", author: "Kevin Tierney") {
+    capability "Configuration" // https://docs.hubitat.com/index.php?title=Driver_Capability_List#Configuration
     // Dev Note: For Configuration must define command "configure()"
 
     capability "Battery" // https://docs.hubitat.com/index.php?title=Driver_Capability_List#Battery
@@ -27,8 +27,8 @@ metadata {
     // 0020 - poll control
     // 0b05 - Diagnostics
     // 0500 - Intruder Alarm System (IAS) Zone
-		fingerprint profileId: "0104", inClusters: "0000,0001,0003,0500,0020,0B05", outClusters: "0003,0019", model:"Overflow"
-    }
+    fingerprint profileId: "0104", inClusters: "0000,0001,0003,0500,0020,0B05", outClusters: "0003,0019", model:"Overflow"
+  }
 }
 
 // From Hubitat documentation: Called in response to a message received by the device driver.
@@ -116,7 +116,7 @@ private Map parseIasMessage(String description) {
       break
 
     case '0x0025': // Restore Report
-     	if (logEnable) log.debug 'water with tamper alarm'
+      if (logEnable) log.debug 'water with tamper alarm'
       resultMap = getMoistureResult('wet')
       break
 
@@ -149,7 +149,7 @@ private Map getBatteryResult(rawValue) {
   def descriptionText
   if (volts > 3.5) {
     result.descriptionText = "${linkText} battery has too much power (${volts} volts)."
-  }	else {
+  } else {
     def minVolts = 2.1
     def maxVolts = 3.0
     def pct = (volts - minVolts) / (maxVolts - minVolts)
@@ -174,7 +174,7 @@ private Map getMoistureResult(value) {
 def refresh() {
   if (logEnable) log.debug "Refresh."
   // Read battery
-	[
+  [
     "he rattr 0x${device.deviceNetworkId} 1 1 0x20"
   ]
 }
@@ -190,11 +190,11 @@ def configure() {
     "zcl global send-me-a-report 1 0x20 0x20 300 0600 {01}", "delay 200",
     "send 0x${device.deviceNetworkId} 1 1", "delay 1500",
 
-		"zdo bind 0x${device.deviceNetworkId} 1 1 0x001 {${device.zigbeeId}} {}", "delay 1000",
+    "zdo bind 0x${device.deviceNetworkId} 1 1 0x001 {${device.zigbeeId}} {}", "delay 1000",
 
     // Per: https://community.hubitat.com/t/need-help-converting-st-zigbee-dth-to-he/13658
     "he raw 0x${device.deviceNetworkId} 1 1 0x500 {01 23 00 00 00}", "delay 1200",
-	]
+  ]
   return configCmds + refresh() // send refresh cmds as part of config
 }
 
