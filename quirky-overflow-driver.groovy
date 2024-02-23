@@ -73,7 +73,7 @@ private Map parseCatchAllMessage(String description) {
   return resultMap
 }
 
-private boolean shouldProcessMessage(descMap) {
+private boolean shouldProcessMessage(cluster) {
   // 0x0B is default response indicating message got through
   // 0x07 is bind message
   boolean ignoredMessage = cluster.profileId != 0x0104 || 
