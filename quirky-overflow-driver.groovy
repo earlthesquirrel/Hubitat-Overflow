@@ -2,18 +2,26 @@
 Quirky Moisture Sensor
 Based off of https://community.smartthings.com/t/quirky-overflow/18359/35
 */
+
+public static String version() { return "v1.1.0.20240310"}
+
 metadata {
-  definition (name: "Quirky Moisture Sensor",namespace: "tierneykev", author: "Kevin Tierney") {
-    capability "Configuration" // https://docs.hubitat.com/index.php?title=Driver_Capability_List#Configuration
+  definition (name: "Quirky Moisture Sensor",namespace: "tierneykev", author: "Kevin Tierney") 
+  {
+    capability "Configuration" 
+    // https://docs.hubitat.com/index.php?title=Driver_Capability_List#Configuration
     // Dev Note: For Configuration must define command "configure()"
 
-    capability "Battery" // https://docs.hubitat.com/index.php?title=Driver_Capability_List#Battery
+    capability "Battery" 
+    // https://docs.hubitat.com/index.php?title=Driver_Capability_List#Battery
     // Dev Note: For Battery must define attribute "battery" with a number value
 
-    capability "Refresh" // https://docs.hubitat.com/index.php?title=Driver_Capability_List#Refresh
+    capability "Refresh" 
+    // https://docs.hubitat.com/index.php?title=Driver_Capability_List#Refresh
     // Dev Note:  For Refresh must define command "refresh()"
 
-    capability "WaterSensor" // https://docs.hubitat.com/index.php?title=Driver_Capability_List#WaterSensor
+    capability "WaterSensor" 
+    // https://docs.hubitat.com/index.php?title=Driver_Capability_List#WaterSensor
     // Dev Note: For WaterSensor must define attribute "water" with values "wet" or "dry"
 
     command "enrollResponse"
@@ -21,15 +29,36 @@ metadata {
     // based on https://zigbeealliance.org/wp-content/uploads/2019/12/07-5123-06-zigbee-cluster-library-specification.pdf and
     // https://www.nxp.com/docs/en/user-guide/JN-UG-3077.pdf
     // 0000 - Basic
-    // 0001- Power configuration
+    // 0001 - Power configuration
     // 0003 - Identity
     // 0019 - OTA Upgrade
     // 0020 - poll control
     // 0b05 - Diagnostics
     // 0500 - Intruder Alarm System (IAS) Zone
+    
     fingerprint profileId: "0104", inClusters: "0000,0001,0003,0500,0020,0B05", outClusters: "0003,0019", model:"Overflow"
   }
+  
+  simulator{
+  }
+  
+   tiles(scale: 1) {
+
+        multiAttributeTile(name:"water", type: "generic", width: 6, height: 4){
+            tileAttribute ("device.water", key: "PRIMARY_CONTROL") {
+                attributeState "dry", label: "Dry", icon:"st.alarm.water.dry", backgroundColor:"#ffffff"
+                attributeState "wet", label: "Wet", icon:"st.alarm.water.wet", backgroundColor:"#00a0dc"
+            }
+            
+            tileAttribute ("device.lastActivity", key: "SECONDARY_CONTROL") {
+				attributeState "default", label:'Last activity: ${currentValue}', action: "refresh.refresh"
+			}
+        }
+    }
 }
+
+
+logEnable = true
 
 // From Hubitat documentation: Called in response to a message received by the device driver.
 // Depending on the type of message received you will likely need to parse the description string into something more useful.
